@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuración SSH para GitHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #64b3f4, #c2e59c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .steps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(550px, 1fr));
+            gap: 20px;
+            padding: 40px;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            border-left: 5px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+        }
+        
+        .step-number {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 40px;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+        
+        .step-title {
+            font-size: 1.3em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+        }
+        
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 1.1em;
+        }
+        
+        .note {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .warning {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .success {
+            background: #d1ecf1;
+            border-left: 4px solid #0dcaf0;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        
+        .box {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .private {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .public {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .github-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .github-step {
+            background: #0d6efd;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+        
+        .push-pull {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .push {
+            background: #d4edda;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .pull {
+            background: #cce5ff;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin-top: 40px;
+        }
+        
+        .final-message {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .steps-container {
+                grid-template-columns: 1fr;
+                padding: 20px;
+            }
+            
+            .github-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .grid-2, .push-pull {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Configuración SSH para GitHub</h1>
+            <p style="opacity: 0.8; margin-top: 10px;">Guía paso a paso para autenticación sin contraseñas</p>
+        </div>
+        
+        <div class="steps-container">
+            <!-- Paso 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-title">Crear carpeta SSH</div>
+                <div class="code-block">mkdir ~/.ssh
+cd ~/.ssh</div>
+                <div class="note">Ubicación: C:\Users\TuUsuario\.ssh</div>
+            </div>
+            
+            <!-- Paso 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-title">Generar llave SSH</div>
+                <div class="code-block">ssh-keygen -t ed25519 -C "tuemail@ejemplo.com"</div>
+                <div class="note">IMPORTANTE: Usa el mismo email que en GitHub</div>
+                <div class="success">PRESIONAR: ENTER 3 veces</div>
+            </div>
+            
+            <!-- Paso 3 -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-title">Crear archivo config</div>
+                <div class="code-block">notepad ~/.ssh/config</div>
+                <div class="code-block">Host github.com
+  HostName github.com
+  User git
+  IdentityFile ~/.ssh/id_ed25519</div>
+                <div class="note">Esto le dice a SSH cómo conectarse con GitHub</div>
+            </div>
+            
+            <!-- Paso 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-title">Activar agente SSH</div>
+                <div class="code-block">eval "$(ssh-agent -s)"
+ssh-add ~/.ssh/id_ed25519</div>
+                <div class="note">El agente SSH guarda tu llave en memoria</div>
+            </div>
+            
+            <!-- Paso 5 -->
+            <div class="step">
+                <div class="step-number">5</div>
+                <div class="step-title">Copiar llave pública</div>
+                <div class="code-block">cat ~/.ssh/id_ed25519.pub</div>
+                <div class="grid-2">
+                    <div class="box private">PRIVADA<br>id_ed25519<br>NUNCA compartir</div>
+                    <div class="box public">PÚBLICA<br>id_ed25519.pub<br>SÍ compartir con GitHub</div>
+                </div>
+                <div class="success">En GitHub: Settings → SSH and GPG keys → New SSH Key → Pegar y guardar</div>
+            </div>
+            
+            <!-- Paso 6 -->
+            <div class="step">
+                <div class="step-number">6</div>
+                <div class="step-title">Probar conexión</div>
+                <div class="code-block">ssh -T git@github.com</div>
+                <div class="warning">Va a preguntar: Escribir: yes</div>
+                <div class="success">Si funciona verás: "Hi [tu-usuario]! You've successfully authenticated..."</div>
+            </div>
+            
+            <!-- Paso 7 -->
+            <div class="step">
+                <div class="step-number">7</div>
+                <div class="step-title">Ir al proyecto</div>
+                <div class="code-block">cd "Hello Git"
+git status</div>
+                <div class="note">git status muestra cambios pendientes por guardar</div>
+            </div>
+            
+            <!-- Paso 8 -->
+            <div class="step">
+                <div class="step-number">8</div>
+                <div class="step-title">Crear repositorio en GitHub</div>
+                <div class="github-steps">
+                    <div class="github-step">1. New Repository</div>
+                    <div class="github-step">2. Nombre: "Hello Git"</div>
+                    <div class="github-step">3. NO crear README</div>
+                    <div class="github-step">4. Copiar URL SSH</div>
+                </div>
+                <div class="code-block">git@github.com:usuario/hello-git.git</div>
+            </div>
+            
+            <!-- Paso 9 -->
+            <div class="step">
+                <div class="step-number">9</div>
+                <div class="step-title">Conectar y subir (push)</div>
+                <div class="code-block">git remote add origin git@github.com:usuario/hello-git.git
+git remote -v
+git push -u origin main</div>
+                <div class="grid-2">
+                    <div class="note">remote add: Conecta repositorios</div>
+                    <div class="note">remote -v: Verifica conexión</div>
+                </div>
+                <div class="success">push: Sube código a GitHub</div>
+            </div>
+            
+            <!-- Paso 10 -->
+            <div class="step">
+                <div class="step-number">10</div>
+                <div class="step-title">Bajar cambios (Pull)</div>
+                <div class="note">1. Haz un cambio en GitHub.com (edita README.md)</div>
+                <div class="code-block">git pull</div>
+                <div class="push-pull">
+                    <div class="push">PUSH<br>Local → GitHub<br>git push</div>
+                    <div class="pull">PULL<br>GitHub → Local<br>git pull</div>
+                </div>
+            </div>
+        </div>
+        
+        
+    </script>
+</body>
+</html>
